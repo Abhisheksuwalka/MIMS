@@ -1,0 +1,53 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build output
+dist/
+build/
+
+# Vite-specific
+.vite/
+vite.config.ts.timestamp*
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Editor directories and files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# MongoDB local data
+data/
+*.mongorc.js
+
+# Vercel
+.vercel/
+.vercelignore
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Coverage reports
+coverage/
