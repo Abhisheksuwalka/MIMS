@@ -2,7 +2,7 @@
 
 Full-stack inventory management system for pharmacies. Real-time stock tracking, sales analytics, and billing — built for stores managing thousands of products.
 
-**[Live Demo](<LIVE_LINK>)**
+**[Live Demo](https://mims-frontend-plum.vercel.app/)**
 
 ![Inventory Dashboard](images/inventory.png)
 
