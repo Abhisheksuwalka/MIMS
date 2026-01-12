@@ -5,26 +5,27 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import { useTheContext } from "@/context";
 import { BASE_URL, BILL_BY_MED, BILL_BY_NAME, BILL_BY_PHONE } from "@/env";
-import { Calendar, ChevronRight, Package, Phone, Search, User } from "lucide-react";
+import { exportBillingAsCSV } from "@/lib/exportService";
+import { Calendar, ChevronRight, Download, Package, Phone, Search, User } from "lucide-react";
 import { useState } from "react";
 
 interface Bill {
