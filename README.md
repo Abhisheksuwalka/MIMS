@@ -1,240 +1,196 @@
-# MIMS - Medical Inventory Management System
+# MIMS
 
-## What is This Project?
+Full-stack inventory management system for pharmacies. Real-time stock tracking, sales analytics, and billing — built for stores managing thousands of products.
 
-MIMS (Medical Inventory Management System) is a web-based application designed to manage and track medical supplies, medicines, and equipment inventory in healthcare facilities. The system helps hospitals, clinics, and pharmacies maintain accurate records of their stock levels, manage medicine information, handle billing operations, and monitor inventory in real-time.
+**[Live Demo](<LIVE_LINK>)**
 
-## Why is This Important?
+![Inventory Dashboard](images/inventory.png)
 
-Medical inventory management is critical for healthcare operations because:
+---
 
-- **Patient Safety**: Ensures availability of essential medicines and supplies when needed, preventing treatment delays
-- **Cost Control**: Reduces waste from expired medicines and prevents overstocking or understocking
-- **Error Prevention**: Minimizes manual record-keeping errors through automated tracking
-- **Compliance**: Maintains accurate records required for healthcare regulations
-- **Operational Efficiency**: Streamlines inventory processes, freeing up staff time for patient care
+## What It Does
 
-## Industry Applications
+**Stock Management** — Real-time inventory with low stock alerts, expiry tracking, and batch management. Dashboard shows total products, inventory value, and stock health instantly.
 
-This system can be used by:
+**Analytics** — Sales insights with flexible date ranges (daily/weekly/monthly/yearly). MongoDB aggregation pipelines handle large datasets efficiently. Server-side caching reduces load.
 
-- Hospitals and medical centers for managing large-scale medical supplies
-- Private clinics and lying-in clinics for tracking medicine inventory
-- Pharmacies and drugstores for stock management and sales tracking
-- Medical supply distributors for inventory monitoring
-- Healthcare facilities requiring billing and stock reporting
+**Billing** — Cart persistence across sessions, customer lookup, automatic stock deduction with ACID transactions. Full history with search and CSV export.
 
 ---
 
 ## Tech Stack
 
-**Frontend:**
-
-- React 18 with TypeScript
-- Vite (Build tool)
-- Tailwind CSS
-- Shadcn/ui components
-
-**Backend:**
-
-- Node.js with Express
-- TypeScript (backend) and JavaScript (backend_mongodb)
-- MongoDB database
-- Mongoose ODM
-
-**Deployment:**
-
-- Vercel-ready configuration
+| Layer | Technologies |
+|-------|-------------|
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, Recharts |
+| Backend | Node.js, Express, JWT Auth, MongoDB Aggregation Pipelines |
+| Database | MongoDB Atlas, Mongoose ODM |
+| Infrastructure | Vercel (Serverless), CORS, Rate Limiting |
 
 ---
 
-## Features
+## Screenshots
 
-Based on the project structure:
+| Inventory Management | Sales Analytics |
+|----------------------|-----------------|
+| ![Inventory](images/inventory.png) | ![Analytics](images/analytics.png) |
 
-- Medicine inventory tracking and management
-- Store/pharmacy management
-- Billing system
-- Real-time stock updates
-- Medicine information (dosage, expiry tracking)
-- Query API for inventory searches
-- User authentication middleware
-- Dark/light theme support
+| Create Bill | Billing History |
+|-------------|-----------------|
+| ![Billing](images/billing.png) | ![History](images/history.png) |
 
 ---
 
-## If You Want to Test This Project, Do These Steps:
+## Architecture
 
-### Prerequisites
-
-Ensure you have installed:
-
-- Node.js (v16 or higher)
-- npm or yarn package manager
-- MongoDB (local installation or MongoDB Atlas account)
-- Git
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/Abhisheksuwalka/MIMS.git
-cd "MIMS Medical Inventory Management System"
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         Frontend (React)                         │
+├─────────────────────────────────────────────────────────────────┤
+│  Context API          │  Custom Hooks        │  UI Components   │
+│  - AuthContext        │  - useDebounce       │  - shadcn/ui     │
+│  - StockRefreshContext│  - useBackendStatus  │  - Recharts      │
+├─────────────────────────────────────────────────────────────────┤
+│                    Services & Utilities                          │
+│  - errorHandler.ts    │  - validation.ts     │  - exportService │
+│  - cartPersistence.ts │  - fetchWithErrorHandling               │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      Backend (Express)                           │
+├─────────────────────────────────────────────────────────────────┤
+│  Middleware           │  Controllers         │  Services        │
+│  - JWT Auth           │  - storeController   │  - storeService  │
+│  - Rate Limiting      │  - analyticsController│ - analyticsService│
+│  - Validation         │  - medicineController│  - customerService│
+├─────────────────────────────────────────────────────────────────┤
+│                    Data Layer                                    │
+│  - MongoDB Aggregation Pipelines (no in-memory filtering)       │
+│  - ACID Transactions for billing                                 │
+│  - 5-minute TTL cache for analytics                             │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-### 2. Set Up the MongoDB Backend
+---
+
+## Key Implementation Details
+
+**Performance at Scale**
+- MongoDB aggregation pipelines process analytics server-side
+- In-memory cache with 5-minute TTL reduces database load
+- AbortController cancels stale requests on the frontend
+- Chart data point limits (24 hourly / 31 daily / 12 monthly)
+
+**Data Integrity**
+- Mongoose transactions ensure billing + stock updates are atomic
+- Optimistic UI updates with rollback on failure
+- Input validation on both client and server
+
+**Security**
+- JWT tokens with 7-day expiry
+- Rate limiting (10 req/min on auth routes)
+- Security headers (X-Frame-Options, X-XSS-Protection)
+- Password hashing with bcrypt (12 rounds)
+
+**Developer Experience**
+- Structured logging with request IDs
+- Standardized API responses
+- TypeScript on frontend, JSDoc on backend
+- Service layer separation (controllers → services)
+
+---
+
+## Quick Start
 
 ```bash
+# Clone
+git clone https://github.com/Abhisheksuwalka/MIMS.git
+cd MIMS
+
+# Backend
 cd backend_mongodb
 npm install
-```
-
-Create a `.env` file in `backend_mongodb` directory:
-
-```env
-MONGODB_URI=your_mongodb_connection_string
-PORT=5000
-```
-
-Start the MongoDB backend:
-
-```bash
-npm start
-```
-
-The backend will run on `http://localhost:5000`
-
-### 3. Set Up the TypeScript Backend (Optional)
-
-```bash
-cd ../backend
-npm install
-```
-
-Configure environment variables, CHANGE PORT as needed, then:
-
-```bash
+cp .env.example .env  # Add MONGODB_URI and JWT_SECRET
 npm run dev
-```
 
-### 4. Set Up the Frontend
-
-```bash
+# Frontend (new terminal)
 cd ../VITE_frontend
 npm install
-```
-
-Create a `.env` file in `VITE_frontend` directory based on `src/env.tsx`:
-
-```env
-VITE_API_URL=http://localhost:5000
-```
-
-Start the development server:
-
-```bash
+cp .env.example .env  # Add VITE_API_URL=http://localhost:3000
 npm run dev
 ```
 
-The frontend will run on `http://localhost:5173` (default Vite port)
+Open http://localhost:5173
 
-### 5. Access the Application
+---
 
-Open your browser and navigate to:
+## API Reference
+
+All routes except `/store/signup` and `/store/login` require `Authorization: <token>` header.
 
 ```
-http://localhost:5173
+Authentication
+POST /store/signup              Create account
+POST /store/login               Get JWT token
+POST /store/logout              Invalidate session
+
+Stock Management
+POST /store/api/stock           Query stock (with search)
+POST /store/api/addstock        Add medicine to inventory
+POST /store/api/removestock     Remove from inventory
+POST /store/api/updatestock     Update price/quantity/expiry
+
+Billing
+POST /store/api/billing         Create bill (with transaction)
+POST /store/api/billbyname      Search by customer name
+POST /store/api/billbyphone     Search by phone
+POST /store/api/billbymed       Search by medicine
+
+Analytics
+POST /store/analytics/sales     Sales data with date range
+POST /store/analytics/top-selling   Top selling medicines
+
+Customers
+POST /store/customers/lookup    Find returning customer
+GET  /store/alerts/low-stock    Get low stock alerts
 ```
 
 ---
 
-## Project Structure
+## Environment Variables
 
+**Backend** (`backend_mongodb/.env`)
+```env
+MONGODB_URI=mongodb+srv://...
+JWT_SECRET=your-secret-key
+PORT=3000
+NODE_ENV=development
 ```
-MIMS Medical Inventory Management System/
-├── VITE_frontend/          # React + Vite frontend
-│   ├── src/
-│   │   ├── pages/          # Application pages
-│   │   ├── components/     # Reusable UI components
-│   │   ├── context/        # React context providers
-│   │   └── assets/         # Images and static files
-│   └── package.json
-│
-├── backend/                # TypeScript backend
-│   ├── api/
-│   └── package.json
-│
-└── backend_mongodb/        # MongoDB backend
-    ├── api/                # API entry point
-    ├── routes/             # Medicine and store routes
-    ├── schema/             # Mongoose schemas
-    ├── middleware/         # Authentication & validation
-    └── configDB/           # Database configuration
+
+**Frontend** (`VITE_frontend/.env`)
+```env
+VITE_API_URL=http://localhost:3000
 ```
 
 ---
 
-## API Endpoints
+## Deployment
 
-The backend provides routes for:
+Both frontend and backend are deployed to Vercel as serverless functions.
 
-- **Medicine Routes** (`/api/medicine`): CRUD operations for medicine inventory
-- **Store Routes** (`/api/store`): Store management operations
-- **Query API**: Search and filter inventory
-
-Refer to `backend_mongodb/routes/` for detailed endpoint implementations.
 
 ---
 
-## Building for Production
+## Author
 
-### Frontend
+**Abhishek Suwalka**
 
-```bash
-cd VITE_frontend
-npm run build
-```
-
-Build output will be in `VITE_frontend/dist/`
-
-### Backend
-
-The project includes `vercel.json` configurations for deployment to Vercel.
-
----
-
-## Database Schema
-
-The system uses MongoDB with the following collections:
-
-- **Medicine**: Stores medicine details (name, quantity, expiry, dosage)
-- **Store**: Manages store/pharmacy information
-- **Billing**: Tracks sales and billing records
-
-Schema definitions are located in `backend_mongodb/schema/`
-
----
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Commit your changes (`git commit -m 'Add some feature'`)
-4. Push to the branch (`git push origin feature/your-feature`)
-5. Open a Pull Request
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white)](https://linkedin.com/in/abhisheksuwalka)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=flat&logo=github&logoColor=white)](https://github.com/Abhisheksuwalka)
 
 ---
 
 ## License
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
-
----
-
-## Contact
-
-For any inquiries or project-related questions, feel free to reach out:
-
-- **LinkedIn**: [Abhishek S.](https://in.linkedin.com/in/abhisheksuwalka)
-- **Email**: [suwalkabhishek@gmail.com](mailto:suwalkabhishek@gmail.com)
-
----
+MIT

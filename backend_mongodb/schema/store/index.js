@@ -1,14 +1,14 @@
-import mongoose from 'mongoose';
-import { medicineSchema } from '../medicine/index.js';
-import billingSchema from '../billing/index.js';
 import bcrypt from 'bcryptjs';
-import Jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
+import billingSchema from '../billing/index.js';
+import { medicineSchema } from '../medicine/index.js';
 
 const StoreSchema = new mongoose.Schema({
     storeEmail: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        index: true // Added index
     },
     password: {
         type:String,
@@ -28,9 +28,26 @@ const StoreSchema = new mongoose.Schema({
                 medData:medicineSchema,
                 medObjectid: { 
                     type : mongoose.Schema.Types.ObjectId, 
-                    ref  : "Medicines" 
+                    ref  : "Medicines",
+                    index: true // Added index
                 },
-                quantity: Number,
+                quantity: { 
+                    type: Number, 
+                    min: 0 
+                },
+                // NEW: Expiry Management Fields
+                expiryDate: {
+                    type: Date,
+                    index: true // For expiry alerts query
+                },
+                batchNumber: {
+                    type: String,
+                    default: ""
+                },
+                purchasePrice: {
+                    type: Number,
+                    default: 0
+                },
             }
         ],
         default: []
@@ -45,6 +62,7 @@ const StoreSchema = new mongoose.Schema({
     } 
 },{timestamps: true});
 
+// Methods
 StoreSchema.methods.isValidPassword = async function(password) {
     return await bcrypt.compare(password, this.password);
 };
@@ -53,8 +71,8 @@ StoreSchema.methods.toJSON = function() {
     const storeObject = this.toObject();
     delete storeObject.password; // Remove password field from the response
     delete storeObject.token; // Remove token field from the response
-    delete storeObject.stock;
-    delete storeObject.billingHistory;
+    delete storeObject.stock; // Usually too large for auth response
+    delete storeObject.billingHistory; // Usually too large for auth response
 
     return storeObject;
 };

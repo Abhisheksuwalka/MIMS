@@ -10,18 +10,9 @@ const BILLING_STOCK = import.meta.env.VITE_BILLING_STOCK;
 const BILL_BY_NAME = import.meta.env.VITE_BILL_BY_NAME;
 const BILL_BY_PHONE = import.meta.env.VITE_BILL_BY_PHONE;
 const BILL_BY_MED = import.meta.env.VITE_BILL_BY_MED;
+const UPDATE_STOCK = '/store/api/updateStock'; // Direct path, no env needed
 console.log(import.meta.env);
 export {
-    BASE_URL,
-    SIGNUP_ROUTE,
-    LOGIN_ROUTE,
-    STORE_DATA_ROUTE,
-    MEDICINE_SEARCH,
-    ADD_STOCK,
-    STORE_STOCK_QUERRY,
-    REMOVE_STOCK,
-    BILLING_STOCK,
-    BILL_BY_NAME,
-    BILL_BY_PHONE,
-    BILL_BY_MED,
-}
+    ADD_STOCK, BASE_URL, BILLING_STOCK, BILL_BY_MED, BILL_BY_NAME,
+    BILL_BY_PHONE, LOGIN_ROUTE, MEDICINE_SEARCH, REMOVE_STOCK, SIGNUP_ROUTE, STORE_DATA_ROUTE, STORE_STOCK_QUERRY, UPDATE_STOCK
+};

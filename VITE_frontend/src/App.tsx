@@ -1,22 +1,24 @@
-import { ThemeProvider } from "@/components/theme-provider"
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Toaster } from "@/components/ui/toaster"
-import Home from './pages/Home';
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
+import { StockRefreshProvider } from "@/context/StockRefreshContext";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Default from './pages/Default';
+import Home from './pages/Home';
 import NoPage from './pages/NoPage';
-// import { Button } from "@/components/ui/button"
-
 
 function App() {  
   return (
     <>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        {/* <Button>Click me</Button> */}
         <BrowserRouter>
           <Routes>
             <Route path="/">
               <Route index element={<Default />} />
-              <Route path="home" element={<Home />} />
+              <Route path="home" element={
+                <StockRefreshProvider>
+                  <Home />
+                </StockRefreshProvider>
+              } />
               <Route path="*" element={<NoPage />} />
             </Route>
           </Routes>
